@@ -2,7 +2,10 @@ node_modules/
 frontend/node_modules/
 backend/.venv/
 __pycache__/
+*.pyc
 .env
 .DS_Store
-*.pyc
 frontend/dist/
+backend/server.log
+backend/temp_login.json
+*.log
