@@ -10,20 +10,20 @@ from bson import ObjectId
 from app.schemas.stage_schemas import validate_stage_output, ValidationError
 
 
-MODEL = "gpt-4o-mini"
-OPENAI_URL = "https://api.openai.com/v1/chat/completions"
+MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 
 # ── Core LLM call ─────────────────────────────────────────────────────────────
 
 def call_llm(system_prompt: str, user_content: str, retries: int = 2) -> Dict[str, Any]:
     """
-    Call OpenAI chat completions with json_object response format.
+    Call Groq chat completions with json_object response format.
     Retries on timeout and 429 rate-limit. Raises RuntimeError on failure.
     """
-    api_key = os.getenv("OPENAI_API_KEY")
+    api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
-        raise RuntimeError("OPENAI_API_KEY not set")
+        raise RuntimeError("GROQ_API_KEY not set")
 
     payload = {
         "model": MODEL,
@@ -39,7 +39,7 @@ def call_llm(system_prompt: str, user_content: str, retries: int = 2) -> Dict[st
     for attempt in range(retries + 1):
         try:
             response = requests.post(
-                OPENAI_URL,
+                GROQ_URL,
                 headers={
                     "Authorization": f"Bearer {api_key}",
                     "Content-Type": "application/json",
@@ -52,19 +52,19 @@ def call_llm(system_prompt: str, user_content: str, retries: int = 2) -> Dict[st
             return json.loads(content)
 
         except requests.exceptions.Timeout:
-            last_error = RuntimeError("OpenAI request timed out")
+            last_error = RuntimeError("Groq request timed out")
             if attempt < retries:
                 time.sleep(2)
 
         except requests.exceptions.HTTPError as e:
             if response.status_code == 429 and attempt < retries:
                 time.sleep(5)
-                last_error = RuntimeError(f"OpenAI rate limit hit: {e}")
+                last_error = RuntimeError(f"Groq rate limit hit: {e}")
             else:
-                raise RuntimeError(f"OpenAI API error {response.status_code}: {e}")
+                raise RuntimeError(f"Groq API error {response.status_code}: {e}")
 
         except (json.JSONDecodeError, KeyError) as e:
-            raise RuntimeError(f"Invalid response from OpenAI: {e}")
+            raise RuntimeError(f"Invalid response from Groq: {e}")
 
     raise last_error
 
