@@ -1,10 +1,11 @@
 import os
+from pathlib import Path
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 
-load_dotenv(override=False)
+load_dotenv(dotenv_path=Path(__file__).resolve().parents[2] / ".env", override=False)
 
 
 def create_app():
