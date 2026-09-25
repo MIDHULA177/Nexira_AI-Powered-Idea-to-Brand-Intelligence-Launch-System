@@ -1,6 +1,6 @@
 NEXIRA — Detailed Project README
 
-AI-Powered Multi-Agent Brand Building Web Application
+AI-Powered Idea to Brand Intelligence Launch System
 
 1. Project Overview
 
