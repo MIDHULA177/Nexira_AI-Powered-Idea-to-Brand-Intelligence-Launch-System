@@ -13,8 +13,8 @@ def create_app():
     app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "nexira-dev-secret-change-in-production")
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = False
 
-    allowed_origins = [os.getenv("FRONTEND_URL", "http://localhost:5173")]
-    CORS(app, origins=allowed_origins, supports_credentials=True)
+    frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+    CORS(app, origins=[frontend_url, "http://localhost:5173"], supports_credentials=True, allow_headers=["Content-Type", "Authorization"], methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"])
     JWTManager(app)
 
     from app.routes.auth import auth_bp
