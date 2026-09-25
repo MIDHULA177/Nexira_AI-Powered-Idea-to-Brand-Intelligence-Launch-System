@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: nexira-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn run:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_DB_NAME
+        value: nexira
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: FRONTEND_URL
+        sync: false
+      - key: DEFAULT_ADMIN_EMAIL
+        value: admin@nexira.com
+      - key: DEFAULT_ADMIN_PASSWORD
+        value: nexira_admin_2024
+      - key: DEFAULT_ADMIN_FIRST_NAME
+        value: Nexira
+      - key: DEFAULT_ADMIN_LAST_NAME
+        value: Admin
+
+  - type: web
+    name: nexira-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
