@@ -4,7 +4,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=False)
 
 
 def create_app():
